@@ -149,7 +149,7 @@ activemq-data/
 
 # Environments
 .env
-apps/user-management-service/.env
+src/apps/user-management-service/.env
 .envrc
 .venv
 env/
