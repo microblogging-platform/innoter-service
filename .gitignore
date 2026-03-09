@@ -148,7 +148,8 @@ activemq-data/
 *.sage.py
 
 # Environments
-apps/user-management-service/.env
+.env
+src/apps/user-management-service/.env
 .envrc
 .venv
 env/
