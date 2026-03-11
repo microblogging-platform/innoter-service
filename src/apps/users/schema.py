@@ -1,6 +1,6 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
-from src.apps.users.authentication import JWTAuthentication
+from apps.users.authentication import JWTAuthentication
 
 
 class JWTScheme(OpenApiAuthenticationExtension):

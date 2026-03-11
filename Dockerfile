@@ -17,8 +17,8 @@ RUN poetry install --no-interaction --no-ansi --no-root --only main
 
 COPY . .
 
-WORKDIR /app/innoter
+WORKDIR /app/src
 
 EXPOSE 8000
 
-CMD ["uvicorn", "innoter.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "core.asgi:application", "--host", "0.0.0.0", "--port", "8000"]

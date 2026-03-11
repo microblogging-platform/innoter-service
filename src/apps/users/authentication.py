@@ -8,7 +8,7 @@ from django.conf import settings
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from src.apps.users.models import User
+from apps.users.models import User
 
 logger = logging.getLogger(__name__)
 

@@ -28,8 +28,9 @@ services:
       db:
         condition: service_healthy
     command: >
-      sh -c "python manage.py migrate --noinput &&
-             uvicorn innoter.asgi:application --host 0.0.0.0 --port 8000"
+      sh -c "python manage.py makemigrations --noinput &&
+             python manage.py migrate --noinput &&
+             uvicorn core.asgi:application --host 0.0.0.0 --port 8000"
 
 volumes:
   mysql_data:
