@@ -1,6 +1,7 @@
 services:
-  db:
+  mysql:
     image: mysql:8.4
+    container_name: innoter-mysql
     restart: unless-stopped
     env_file: .env
     environment:
@@ -10,6 +11,8 @@ services:
       - "${DB_PORT:-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - microblogging-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
@@ -18,14 +21,17 @@ services:
 
   app:
     build: .
+    container_name: innoter-service
     restart: unless-stopped
     env_file: .env
+    networks:
+      - microblogging-network
     environment:
-      DB_HOST: db
+      DB_HOST: mysql
     ports:
       - "8000:8000"
     depends_on:
-      db:
+      mysql:
         condition: service_healthy
     command: >
       sh -c "python manage.py makemigrations --noinput &&
@@ -34,3 +40,7 @@ services:
 
 volumes:
   mysql_data:
+
+networks:
+  microblogging-network:
+    external: true

@@ -49,20 +49,20 @@ class PageViewSet(
             case _:
                 return [IsAuthenticated()]
 
-    async def perform_create(self, serializer):
+    async def perform_acreate(self, serializer):
         serializer.instance = await PageService.create_page(
             validated_data=serializer.validated_data,
             user_id=self.request.user.id,
             group_id=self.request.user.group_id,
         )
 
-    async def perform_update(self, serializer):
+    async def perform_aupdate(self, serializer):
         serializer.instance = await PageService.update_page(
             page=serializer.instance,
             validated_data=serializer.validated_data,
         )
 
-    async def perform_destroy(self, instance):
+    async def perform_adestroy(self, instance):
         await PageService.delete_page(instance)
 
     async def retrieve(self, request, *args, **kwargs):

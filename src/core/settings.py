@@ -101,14 +101,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.users.authentication.JWTAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.users.authentication.UserManagementAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_PAGINATION_CLASS": "apps.blog.pagination.StandardPagination",
     "PAGE_SIZE": 30,
 }
 
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-me")
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+USER_MANAGEMENT_BASE_URL = os.getenv("USER_MANAGEMENT_BASE_URL")
+USER_MANAGEMENT_ME_PATH = os.getenv("USER_MANAGEMENT_ME_PATH", "users/me")
+USER_MANAGEMENT_TIMEOUT_SECONDS = float(os.getenv("USER_MANAGEMENT_TIMEOUT_SECONDS", "3.0"))
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Innoter Service API",

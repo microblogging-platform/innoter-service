@@ -55,4 +55,4 @@ class PageService:
 
     @staticmethod
     def get_followers_queryset(page: Page) -> QuerySet[PageFollower]:
-        return page.followers.order_by("-created_at")
+        return page.followers.all()

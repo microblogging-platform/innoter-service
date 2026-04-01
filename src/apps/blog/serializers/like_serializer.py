@@ -1,9 +1,9 @@
-from rest_framework import serializers
+from adrf.serializers import ModelSerializer
 
 from apps.blog.models.like import PostLike
 
 
-class LikeSerializer(serializers.ModelSerializer):
+class LikeSerializer(ModelSerializer):
     class Meta:
         model = PostLike
         fields = ["user_id", "post"]

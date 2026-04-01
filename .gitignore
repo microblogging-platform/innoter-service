@@ -222,3 +222,6 @@ __marimo__/
 *.tfstate.backup
 *.tfvars
 .terraform.lock.hcl
+
+Claude Code
+.claude/
