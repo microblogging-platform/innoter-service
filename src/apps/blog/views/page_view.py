@@ -68,7 +68,6 @@ class PageViewSet(
         await PageService.delete_page(instance)
 
     async def aretrieve(self, request, *args, **kwargs):
-        """GET /page/<page_id>?page=1&limit=30 — page info + paginated posts."""
         page_obj = await self.aget_object()
 
         paginator = StandardPagination()

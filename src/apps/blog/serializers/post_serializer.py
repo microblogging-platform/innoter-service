@@ -13,7 +13,6 @@ class PostSerializer(ModelSerializer):
         read_only_fields = ["id", "page", "created_at", "updated_at"]
 
     def get_likes_count(self, obj) -> int:
-        # Use annotated value if available (queryset optimization), otherwise query
         if hasattr(obj, "likes_count"):
             return obj.likes_count
         return obj.likes.count()

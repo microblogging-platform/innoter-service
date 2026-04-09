@@ -10,7 +10,6 @@ class IsAdmin(BasePermission):
 
 
 class IsModerator(BasePermission):
-    """Moderator can only manage resources belonging to users in the same group."""
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and request.user.role == "MODERATOR")
@@ -33,7 +32,6 @@ class IsModerator(BasePermission):
 
 
 class IsPageOwner(BasePermission):
-    """Works for both Page objects (obj.user_id) and Post objects (obj.page.user_id)."""
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated)

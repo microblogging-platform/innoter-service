@@ -14,7 +14,6 @@ class PostViewSet(
     DestroyModelMixin,
     GenericViewSet,
 ):
-    # likes_count annotation ensures serializer never does a sync DB call for count
     queryset = Post.objects.select_related("page").annotate(likes_count=Count("likes")).all()
     serializer_class = PostUpdateSerializer
     permission_classes = [IsAdmin | IsModerator | IsPageOwner]
