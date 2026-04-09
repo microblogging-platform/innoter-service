@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
+import httpx
 from django.conf import settings
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -9,37 +10,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from apps.users.models import User
 
 logger = logging.getLogger(__name__)
-
-
-def _parse_dt(value: object) -> datetime | None:
-    if not value:
-        return None
-    if isinstance(value, datetime):
-        return value
-    if isinstance(value, str):
-        try:
-            return datetime.fromisoformat(value.replace("Z", "+00:00"))
-        except ValueError:
-            return None
-    return None
-
-
-def _extract_group_id(group: object) -> int | None:
-    if group is None:
-        return None
-    if isinstance(group, int):
-        return group
-    if isinstance(group, str) and group.isdigit():
-        return int(group)
-    if isinstance(group, dict):
-        for key in ("id", "group_id"):
-            value = group.get(key)
-            if isinstance(value, int):
-                return value
-            if isinstance(value, str) and value.isdigit():
-                return int(value)
-    # TODO: Align response shape with user-management service contract.
-    return None
 
 
 class UserManagementAuthentication(BaseAuthentication):
@@ -52,20 +22,18 @@ class UserManagementAuthentication(BaseAuthentication):
             return None
 
         parts = auth_header.split()
-
-        if len(parts) == 0 or parts[0] != self.keyword or len(parts) != 2:
+        if len(parts) != 2 or parts[0] != self.keyword:
             return None
 
-        if not getattr(settings, "USER_MANAGEMENT_BASE_URL", None):
+        base_url = getattr(settings, "USER_MANAGEMENT_BASE_URL", None)
+        if not base_url:
             logger.error("USER_MANAGEMENT_BASE_URL is not configured")
             raise AuthenticationFailed("Authentication service is not configured")
 
+        url = base_url.rstrip("/") + "/" + settings.USER_MANAGEMENT_ME_PATH.lstrip("/")
+        timeout = settings.USER_MANAGEMENT_TIMEOUT_SECONDS
+
         try:
-            import httpx
-
-            url = "http://user-management-service:8000/api/v1/users/me"
-            timeout = 3
-
             with httpx.Client(timeout=timeout) as client:
                 resp = client.get(url, headers={"Authorization": auth_header})
 
@@ -85,19 +53,26 @@ class UserManagementAuthentication(BaseAuthentication):
             logger.error("user-management auth request failed: %s", e)
             raise AuthenticationFailed("Authentication service unavailable")
 
-        user_id = payload.get("id") or payload.get("user_id") or payload.get("sub")
+        user_id = payload.get("id") or payload.get("sub")
         role = payload.get("role")
-        group_id = _extract_group_id(payload.get("group"))
+        group_id = payload.get("group_id")
 
         if not user_id:
-            raise AuthenticationFailed("User id is missing in token")
+            raise AuthenticationFailed("User id is missing in response")
         if not role:
-            raise AuthenticationFailed("Role is missing in token")
+            raise AuthenticationFailed("Role is missing in response")
 
         try:
             user_uuid = UUID(str(user_id))
-        except Exception:
-            raise AuthenticationFailed("Invalid user id")
+        except ValueError:
+            raise AuthenticationFailed("Invalid user id format")
+
+        created_at = payload.get("created_at")
+        if isinstance(created_at, str):
+            try:
+                created_at = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+            except ValueError:
+                created_at = None
 
         user = User(
             id=user_uuid,
@@ -106,11 +81,10 @@ class UserManagementAuthentication(BaseAuthentication):
             name=payload.get("name"),
             surname=payload.get("surname"),
             username=payload.get("username"),
-            phone_number=payload.get("phone_number") or payload.get("phoneNumber"),
+            phone_number=payload.get("phone_number"),
             email=payload.get("email"),
-            image_s3_path=payload.get("image_s3_path") or payload.get("imageS3Path"),
-            is_blocked=payload.get("is_blocked") if "is_blocked" in payload else payload.get("isBlocked"),
-            created_at=_parse_dt(payload.get("created_at") or payload.get("createdAt")),
+            image_s3_path=payload.get("image_s3_path"),
+            created_at=created_at,
         )
 
         return user, payload

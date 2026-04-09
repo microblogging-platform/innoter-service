@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission
 
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role == "admin")
+        return bool(request.user and request.user.is_authenticated and request.user.role == "ADMIN")
 
     def has_object_permission(self, request, view, obj):
         return self.has_permission(request, view)
@@ -13,7 +13,7 @@ class IsModerator(BasePermission):
     """Moderator can only manage resources belonging to users in the same group."""
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role == "moderator")
+        return bool(request.user and request.user.is_authenticated and request.user.role == "MODERATOR")
 
     def has_object_permission(self, request, view, obj):
         if not self.has_permission(request, view):

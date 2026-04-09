@@ -9,6 +9,7 @@ from apps.blog.serializers.tag_serializer import TagSerializer
 class PageSerializer(ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True, write_only=True, required=False)
     tags_info = TagSerializer(source="tags", many=True, read_only=True)
+    followers_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Page
@@ -17,19 +18,24 @@ class PageSerializer(ModelSerializer):
             "name",
             "description",
             "user_id",
-            "group_id",
             "image_url",
             "tags",
             "tags_info",
+            "followers_count",
             "is_blocked",
             "unblock_date",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "user_id", "group_id", "is_blocked", "unblock_date", "created_at", "updated_at"]
+        read_only_fields = ["id", "user_id", "is_blocked", "unblock_date", "created_at", "updated_at"]
         extra_kwargs = {
             "image_url": {"required": False},
         }
+
+    def get_followers_count(self, obj) -> int:
+        if hasattr(obj, "followers_count"):
+            return obj.followers_count
+        return obj.followers.count()
 
 
 class BlockPageSerializer(Serializer):

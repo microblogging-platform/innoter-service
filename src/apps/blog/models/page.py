@@ -10,6 +10,6 @@ class Page(TimeStampedMixin):
     user_id = models.UUIDField(editable=False)
     group_id = models.IntegerField(null=True, blank=True, editable=False)
     image_url = models.URLField(max_length=1024, blank=True, null=True)
-    tags = models.ManyToManyField("Tag", related_name="tags", blank=True)
+    tags = models.ManyToManyField("Tag", related_name="pages", blank=True)
     is_blocked = models.BooleanField(default=False)
     unblock_date = models.DateTimeField(null=True, blank=True, default=None)

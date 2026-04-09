@@ -14,5 +14,4 @@ router.register(r"tags", TagViewSet)
 
 urlpatterns = [
     path("feed", FeedView.as_view(), name="feed"),
-    path("tag", TagViewSet.as_view({"post": "create"}), name="tag-create"),
 ] + router.urls

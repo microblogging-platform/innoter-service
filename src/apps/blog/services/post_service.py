@@ -1,4 +1,4 @@
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 
 from apps.blog.models.page import Page
 from apps.blog.models.post import Post
@@ -28,5 +28,6 @@ class PostService:
                 page__is_blocked=False,
             )
             .select_related("page")
+            .annotate(likes_count=Count("likes"))
             .order_by("-created_at")
         )
