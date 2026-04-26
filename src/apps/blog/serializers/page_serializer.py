@@ -38,6 +38,18 @@ class PageSerializer(ModelSerializer):
         return obj.followers.count()
 
 
+class CreatePageSerializer(ModelSerializer):
+    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True, required=False)
+
+    class Meta:
+        model = Page
+        fields = ["name", "description", "image_url", "tags"]
+        extra_kwargs = {
+            "description": {"required": False},
+            "image_url": {"required": False},
+        }
+
+
 class BlockPageSerializer(Serializer):
     block_days = serializers.IntegerField(
         required=True, min_value=1, max_value=365, help_text="Enter the number of days to block"

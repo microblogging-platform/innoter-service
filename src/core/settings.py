@@ -8,6 +8,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+APPEND_SLASH = False
 
 
 # Application definition
@@ -20,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third-party
+    "corsheaders",
     "rest_framework",
     "drf_spectacular",
     "adrf",
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -109,7 +112,11 @@ REST_FRAMEWORK = {
 
 USER_MANAGEMENT_BASE_URL = os.getenv("USER_MANAGEMENT_BASE_URL")
 USER_MANAGEMENT_ME_PATH = os.getenv("USER_MANAGEMENT_ME_PATH", "/api/v1/users/me")
+USER_MANAGEMENT_AUTHOR_INFO_PATH = os.getenv("USER_MANAGEMENT_AUTHOR_INFO_PATH", "/api/v1/users/{user_id}/author-info")
 USER_MANAGEMENT_TIMEOUT_SECONDS = float(os.getenv("USER_MANAGEMENT_TIMEOUT_SECONDS", "3.0"))
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Innoter Service API",

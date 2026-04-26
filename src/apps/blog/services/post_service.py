@@ -1,5 +1,6 @@
 from django.db.models import Count, QuerySet
 
+from apps.blog.models.like import PostLike
 from apps.blog.models.page import Page
 from apps.blog.models.post import Post
 
@@ -19,6 +20,15 @@ class PostService:
     @staticmethod
     async def delete_post(post: Post) -> None:
         await post.adelete()
+
+    @staticmethod
+    async def like_post(post: Post, user_id) -> PostLike:
+        like, _ = await PostLike.objects.aget_or_create(user_id=user_id, post=post)
+        return like
+
+    @staticmethod
+    async def unlike_post(post: Post, user_id) -> None:
+        await PostLike.objects.filter(user_id=user_id, post=post).adelete()
 
     @staticmethod
     def get_feed_queryset(user_id) -> QuerySet[Post]:

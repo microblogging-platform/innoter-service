@@ -1,4 +1,4 @@
-from adrf.mixins import CreateModelMixin, ListModelMixin
+from adrf.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin
 from adrf.viewsets import GenericViewSet
 
 from apps.blog.models.tag import Tag
@@ -9,11 +9,14 @@ from apps.blog.serializers.tag_serializer import TagSerializer
 class TagViewSet(
     ListModelMixin,
     CreateModelMixin,
+    UpdateModelMixin,
+    DestroyModelMixin,
     GenericViewSet,
 ):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = StandardPagination
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
     def get_queryset(self):
         qs = Tag.objects.all()
